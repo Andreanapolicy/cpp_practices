@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
-#include <unordered_map>
 #include <optional>
+#include <unordered_map>
 
 namespace lfu_cache
 {
@@ -22,18 +22,33 @@ public:
 
 	void SetElement(KeyT key, const ElementT& element)
 	{
-		
-	}
-
-	std::optional<ElementT> GetElement(KeyT key) const
-	{
-		auto it = std::find_if(m_cache.begin(), m_cache.end(), [key](const CacheElement& element) {
+		CacheIt it = std::find_if(m_cache.begin(), m_cache.end(), [key](const CacheElement& element) {
 			return element.key == key;
 		});
 
 		if (it == m_cache.end())
 		{
-			return std::nullopt_t;
+			it->element = element;
+			it->priority++;
+			return;
+		}
+
+		if (IsFull())
+		{
+			DeleteElements();
+		}
+		m_cache.emplace_back(key, element);
+	}
+
+	std::optional<ElementT> GetElement(KeyT key) const
+	{
+		CacheIt it = std::find_if(m_cache.begin(), m_cache.end(), [key](CacheElement& element) {
+			return element.key == key;
+		});
+
+		if (it == m_cache.end())
+		{
+			return std::nullopt;
 		}
 
 		it->priority++;
@@ -41,15 +56,35 @@ public:
 	}
 
 private:
-	struct CacheElement
+	struct CacheElement // TODO: too slow to work with struct for every element.
 	{
 		KeyT key;
 		ElementT element;
-		int priority;
+		int priority = 1;
 	};
 
-	size_t m_size;
+	using CacheIt = typename std::list<CacheElement>::iterator;
 
+	/*CacheIt GetElementByKey(KeyT key) const
+	{
+		return std::find_if(m_cache.begin(), m_cache.end(), [key](const CacheElement& element) {
+			return element.key == key;
+		});
+	}*/
+
+	void DeleteElements()
+	{
+		auto minPriority = m_cache.rend()->priority;
+		for (auto it = m_cache.rbegin(); it != m_cache.rend() && it->priority == minPriority; it++)
+		{
+			if (it->priority == minPriority)
+			{
+				m_cache.pop_back();
+			}
+		}
+	}
+
+	size_t m_size;
 	std::list<CacheElement> m_cache;
 };
 
