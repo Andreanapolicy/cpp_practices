@@ -1,7 +1,7 @@
 #pragma once
+#include <unordered_map>
 #include <list>
 #include <optional>
-#include <unordered_map>
 
 namespace lfu_cache
 {
@@ -22,70 +22,55 @@ public:
 
 	void SetElement(KeyT key, const ElementT& element)
 	{
-		CacheIt it = std::find_if(m_cache.begin(), m_cache.end(), [key](const CacheElement& element) {
-			return element.key == key;
-		});
-
-		if (it == m_cache.end())
+		auto hit = m_hash.find(key);
+		if (hit == m_hash.end())
 		{
-			it->element = element;
-			it->priority++;
-			return;
+			AddElement(key, element);
 		}
 
-		if (IsFull())
-		{
-			DeleteElements();
-		}
-		m_cache.emplace_back(key, element);
+		hit->second->second = element;
 	}
 
 	std::optional<ElementT> GetElement(KeyT key) const
 	{
-		CacheIt it = std::find_if(m_cache.begin(), m_cache.end(), [key](CacheElement& element) {
-			return element.key == key;
-		});
+		auto it = m_hash.find(key);
 
-		if (it == m_cache.end())
+		if (it == m_hash.end())
 		{
 			return std::nullopt;
 		}
 
-		it->priority++;
-		return it->element;
+		return it->second->second;
 	}
 
 private:
-	struct CacheElement // TODO: too slow to work with struct for every element.
+	void AddElement(KeyT key, const ElementT& element)
 	{
-		KeyT key;
-		ElementT element;
-		int priority = 1;
-	};
-
-	using CacheIt = typename std::list<CacheElement>::iterator;
-
-	/*CacheIt GetElementByKey(KeyT key) const
-	{
-		return std::find_if(m_cache.begin(), m_cache.end(), [key](const CacheElement& element) {
-			return element.key == key;
-		});
-	}*/
+		if (IsFull())
+		{
+			DeleteElements();
+		}
+		
+		m_cache.emplace_front(key, element);
+		m_hash.emplace(key, std::find_if(m_cache.begin(), m_cache.end(), [key](const auto& element) { return element.first == key; }));
+	}
 
 	void DeleteElements()
 	{
-		auto minPriority = m_cache.rend()->priority;
+		/*auto minPriority = m_cache.rend()->priority;
 		for (auto it = m_cache.rbegin(); it != m_cache.rend() && it->priority == minPriority; it++)
 		{
 			if (it->priority == minPriority)
 			{
 				m_cache.pop_back();
 			}
-		}
+		}*/
 	}
 
+	using ListIt = typename std::list<std::pair<KeyT, ElementT>>::iterator;
 	size_t m_size;
-	std::list<CacheElement> m_cache;
+	std::list<std::pair<KeyT, ElementT>> m_cache;
+	std::unordered_map<KeyT, ListIt> m_hash;
 };
 
 } // namespace lfu_cache

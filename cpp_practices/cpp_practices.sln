@@ -7,6 +7,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_practices", "cpp_practi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lfu_cache", "lfu_cache\lfu_cache\lfu_cache.vcxproj", "{11D0E877-1033-4B71-9142-C7512ADFA5CF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lfu_cache_tests", "lfu_cache_tests\lfu_cache_tests.vcxproj", "{A7FF3E35-2F5C-4E7F-9D6E-0AACE52674AE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{11D0E877-1033-4B71-9142-C7512ADFA5CF} = {11D0E877-1033-4B71-9142-C7512ADFA5CF}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +36,14 @@ Global
 		{11D0E877-1033-4B71-9142-C7512ADFA5CF}.Release|x64.Build.0 = Release|x64
 		{11D0E877-1033-4B71-9142-C7512ADFA5CF}.Release|x86.ActiveCfg = Release|Win32
 		{11D0E877-1033-4B71-9142-C7512ADFA5CF}.Release|x86.Build.0 = Release|Win32
+		{A7FF3E35-2F5C-4E7F-9D6E-0AACE52674AE}.Debug|x64.ActiveCfg = Debug|x64
+		{A7FF3E35-2F5C-4E7F-9D6E-0AACE52674AE}.Debug|x64.Build.0 = Debug|x64
+		{A7FF3E35-2F5C-4E7F-9D6E-0AACE52674AE}.Debug|x86.ActiveCfg = Debug|Win32
+		{A7FF3E35-2F5C-4E7F-9D6E-0AACE52674AE}.Debug|x86.Build.0 = Debug|Win32
+		{A7FF3E35-2F5C-4E7F-9D6E-0AACE52674AE}.Release|x64.ActiveCfg = Release|x64
+		{A7FF3E35-2F5C-4E7F-9D6E-0AACE52674AE}.Release|x64.Build.0 = Release|x64
+		{A7FF3E35-2F5C-4E7F-9D6E-0AACE52674AE}.Release|x86.ActiveCfg = Release|Win32
+		{A7FF3E35-2F5C-4E7F-9D6E-0AACE52674AE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
